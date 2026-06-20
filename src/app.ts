@@ -8,6 +8,8 @@ import { connectDB } from "./config/database";
 import { withClerk } from "./middleware/auth";
 import userRoutes from "./routes/userRoutes";
 import productRoutes from "./routes/productRoutes";
+import aiRoutes from "./routes/aiRoutes";
+import impactRoutes from "./routes/impactRoutes";
 
 dotenv.config();
 
@@ -17,6 +19,8 @@ const PORT = process.env.PORT || 5000;
 app.use(helmet());
 app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:3000", credentials: true }));
 app.use("/api/products", productRoutes);
+app.use("/api/ai", aiRoutes);
+app.use("/api/impact", impactRoutes);
 app.use(compression());
 app.use(express.json());
 app.use(morgan("dev"));
