@@ -13,3 +13,11 @@ export function verifyInternalRequest(req: Request, res: Response, next: NextFun
   }
   next();
 }
+export function requireAdmin(req: Request, res: Response, next: NextFunction) {
+  const { sessionClaims } = getAuth(req);
+  const role = (sessionClaims?.metadata as { role?: string } | undefined)?.role;
+  if (role !== "admin") {
+    return res.status(403).json({ success: false, message: "Admin access required" });
+  }
+  next();
+}

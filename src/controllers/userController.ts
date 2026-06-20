@@ -3,6 +3,76 @@ import { User } from "../models/User";
 import { getAuth } from "../middleware/auth";
 import { AIHistory } from "../models/AIHistory";
 import { ImpactLog } from "../models/ImpactLog";
+import { createClerkClient } from "@clerk/backend";
+
+const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY! });
+
+export async function getAllUsers(req: Request, res: Response) {
+  try {
+    const { search, role, page = "1", limit = "10" } = req.query as Record<string, string>;
+    const filter: Record<string, any> = {};
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+      ];
+    }
+    if (role && role !== "all") filter.role = role;
+
+    const pageNum = Math.max(Number(page) || 1, 1);
+    const pageLimit = Math.min(Number(limit) || 10, 50);
+
+    const [items, total] = await Promise.all([
+      User.find(filter).sort({ createdAt: -1 }).skip((pageNum - 1) * pageLimit).limit(pageLimit),
+      User.countDocuments(filter),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: items,
+      pagination: { page: pageNum, limit: pageLimit, total, hasMore: pageNum * pageLimit < total },
+    });
+  } catch (error) {
+    console.error("getAllUsers error:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch users" });
+  }
+}
+
+export async function updateUserRole(req: Request, res: Response) {
+  try {
+    const { role } = req.body;
+    if (!["user", "admin"].includes(role)) {
+      return res.status(400).json({ success: false, message: "Invalid role" });
+    }
+
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    await clerk.users.updateUserMetadata(user.clerkId, { publicMetadata: { role } });
+    user.role = role;
+    await user.save();
+
+    res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    console.error("updateUserRole error:", error);
+    res.status(500).json({ success: false, message: "Failed to update role" });
+  }
+}
+
+export async function deleteUser(req: Request, res: Response) {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    await clerk.users.deleteUser(user.clerkId);
+    await User.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({ success: true, message: "User deleted" });
+  } catch (error) {
+    console.error("deleteUser error:", error);
+    res.status(500).json({ success: false, message: "Failed to delete user" });
+  }
+}
 
 export async function syncUserFromClerk(req: Request, res: Response) {
   try {

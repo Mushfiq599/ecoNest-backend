@@ -10,6 +10,7 @@ import userRoutes from "./routes/userRoutes";
 import productRoutes from "./routes/productRoutes";
 import aiRoutes from "./routes/aiRoutes";
 import impactRoutes from "./routes/impactRoutes";
+import adminRoutes from "./routes/adminRoutes";
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:3000", creden
 app.use("/api/products", productRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/impact", impactRoutes);
+app.use("/api/admin", adminRoutes);
 app.use(compression());
 app.use(express.json());
 app.use(morgan("dev"));

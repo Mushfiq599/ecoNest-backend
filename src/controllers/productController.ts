@@ -70,3 +70,38 @@ export async function getRelatedProducts(req: Request, res: Response) {
     res.status(500).json({ success: false, message: "Failed to fetch related products" });
   }
 }
+
+export async function createProduct(req: Request, res: Response) {
+  try {
+    const product = await Product.create(req.body);
+    res.status(201).json({ success: true, data: product });
+  } catch (error) {
+    console.error("createProduct error:", error);
+    res.status(400).json({ success: false, message: "Failed to create product" });
+  }
+}
+
+export async function updateProduct(req: Request, res: Response) {
+  try {
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!product) return res.status(404).json({ success: false, message: "Product not found" });
+    res.status(200).json({ success: true, data: product });
+  } catch (error) {
+    console.error("updateProduct error:", error);
+    res.status(400).json({ success: false, message: "Failed to update product" });
+  }
+}
+
+export async function deleteProduct(req: Request, res: Response) {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product) return res.status(404).json({ success: false, message: "Product not found" });
+    res.status(200).json({ success: true, message: "Product deleted" });
+  } catch (error) {
+    console.error("deleteProduct error:", error);
+    res.status(500).json({ success: false, message: "Failed to delete product" });
+  }
+}
