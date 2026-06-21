@@ -10,7 +10,10 @@ export async function getProducts(req: Request, res: Response) {
 
     const filter: Record<string, any> = {};
     if (search) filter.$text = { $search: search };
-    if (category && category !== "all") filter.category = category;
+    if (category && category !== "all") {
+  const categoryList = category.split(",").filter(Boolean);
+  filter.category = categoryList.length > 1 ? { $in: categoryList } : categoryList[0];
+}
     if (minPrice || maxPrice) {
       filter.price = {};
       if (minPrice) filter.price.$gte = Number(minPrice);

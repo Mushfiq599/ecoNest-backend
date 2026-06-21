@@ -5,6 +5,7 @@ export type ProductCategory = "home" | "fashion" | "food" | "transport";
 export interface IProduct extends Document {
   name: string;
   description: string;
+  longDescription: string;
   price: number;
   category: ProductCategory;
   ecoScore: number;
@@ -18,6 +19,7 @@ const productSchema = new Schema<IProduct>(
   {
     name: { type: String, required: true, trim: true },
     description: { type: String, required: true },
+        longDescription: { type: String, default: "" },
     price: { type: Number, required: true, min: 0 },
     category: { type: String, enum: ["home", "fashion", "food", "transport"], required: true, index: true },
     ecoScore: { type: Number, required: true, min: 0, max: 100 },
