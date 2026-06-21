@@ -1,35 +1,36 @@
+import "dotenv/config";
+
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import compression from "compression";
-import dotenv from "dotenv";
 import { connectDB } from "./config/database";
 import { withClerk } from "./middleware/auth";
 import userRoutes from "./routes/userRoutes";
 import productRoutes from "./routes/productRoutes";
+import adminRoutes from "./routes/adminRoutes";
 import aiRoutes from "./routes/aiRoutes";
 import impactRoutes from "./routes/impactRoutes";
-import adminRoutes from "./routes/adminRoutes";
-
-dotenv.config();
+import contactRoutes from "./routes/contactRoutes";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(helmet());
 app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:3000", credentials: true }));
-app.use("/api/products", productRoutes);
-app.use("/api/ai", aiRoutes);
-app.use("/api/impact", impactRoutes);
-app.use("/api/admin", adminRoutes);
 app.use(compression());
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(withClerk);
 
 app.get("/health", (_req, res) => res.status(200).json({ status: "ok" }));
+app.use("/api/contact", contactRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/ai", aiRoutes);
+app.use("/api/impact", impactRoutes);
 
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err.stack);

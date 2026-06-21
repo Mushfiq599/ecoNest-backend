@@ -1,4 +1,4 @@
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import { getAuth } from "./auth";
 
 export const aiRateLimiter = rateLimit({
@@ -6,6 +6,9 @@ export const aiRateLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => getAuth(req).userId ?? req.ip ?? "anonymous",
+  keyGenerator: (req) => {
+    const { userId } = getAuth(req);
+    return userId ?? ipKeyGenerator(req.ip ?? "");
+  },
   message: { success: false, message: "Too many AI requests. Please wait a moment and try again." },
 });
