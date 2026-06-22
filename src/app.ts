@@ -13,6 +13,7 @@ import adminRoutes from "./routes/adminRoutes";
 import aiRoutes from "./routes/aiRoutes";
 import impactRoutes from "./routes/impactRoutes";
 import contactRoutes from "./routes/contactRoutes";
+import authRoutes from "./routes/authRoutes";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,7 +24,7 @@ app.use(compression());
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(withClerk);
-
+app.use("/api/auth", authRoutes);
 app.get("/health", (_req, res) => res.status(200).json({ status: "ok" }));
 app.use("/api/contact", contactRoutes);
 app.use("/api/users", userRoutes);
