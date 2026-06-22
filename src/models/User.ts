@@ -8,6 +8,8 @@ export interface IUser extends Document {
   name: string;
   imageUrl?: string;
   role: UserRole;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const userSchema = new Schema<IUser>(

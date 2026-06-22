@@ -1,10 +1,8 @@
-import { Request, Response } from "express";
+
 import { getAuth } from "../middleware/auth";
 import { AIHistory } from "../models/AIHistory";
 import { Request, Response } from "express";
 import crypto from "crypto";
-import { getAuth } from "../middleware/auth";
-import { AIHistory } from "../models/AIHistory";
 import { ImpactLog } from "../models/ImpactLog";
 import { Product } from "../models/Product";
 import { getAISearchRecommendations, getImpactAnalysis } from "../services/geminiService";
