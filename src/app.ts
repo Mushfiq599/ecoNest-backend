@@ -20,7 +20,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(helmet());
 app.use(cors({ origin: ["http://localhost:3000",
-    "https://econest-backend-26x3.onrender.com", process.env.CLIENT_URL || "",], credentials: true }));
+    "https://eco-nest-beta.vercel.app", process.env.CLIENT_URL || "",], credentials: true }));
 app.use(compression());
 app.use(express.json());
 app.use(morgan("dev"));
